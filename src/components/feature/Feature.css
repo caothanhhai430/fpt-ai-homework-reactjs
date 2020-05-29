@@ -1,0 +1,18 @@
+.feature{
+    padding: 30px;
+    margin-top : 30px;
+    background-color: antiquewhite;
+    color: blue;
+    font-size: 30px;
+    margin-right: 10px;
+    position: relative;
+    /* width: 450px; */
+    display: inline-block;
+}
+
+.wrap-feature{
+}
+
+.feature-click{
+    background-color: rgb(197, 128, 37);
+}
