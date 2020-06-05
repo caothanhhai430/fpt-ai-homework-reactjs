@@ -13,6 +13,7 @@ const SpeechToText = (props) => {
     const [loadSuccess, setLoadSucees] = useState(false);
     const [isRecoring, setRecording] = useState(false);
     const [recorder,setRecorder] = useState(null);
+    const [successRecord, setSuccessRecord] = useState(false);
     const getRecorder = async()=>{
         try {
             var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -20,7 +21,6 @@ const SpeechToText = (props) => {
         } catch (error) {
             console.log('err' + error);
         }
-    
     }
     const fetchData = (data) => {
         return new Promise((resolve, reject) => {
@@ -58,6 +58,7 @@ const SpeechToText = (props) => {
                             console.log(recorder);
                             recorder.stopRecording(async function () {
                                 try {
+                                    setSuccessRecord(true);
                                     const data = await recorder.getBlob().arrayBuffer();
                                     const arrByte = Uint8Array.from(Buffer.from(data));
                                     console.log(arrByte);
@@ -71,6 +72,8 @@ const SpeechToText = (props) => {
                                     setCanPlaying(true);
                                     const audio = document.getElementById('audi');
                                     audio.play();
+                                    setSuccessRecord(false);
+
                                 } catch (error) {
                                     console.log(error);
                                 }
@@ -97,20 +100,24 @@ const SpeechToText = (props) => {
                             const arrByte = Uint8Array.from(Buffer.from(e.target.result));
                             setTimeout(async () => {
                                 setLoadSucees(true);
+                                setSuccessRecord(true);
                                 try {
                                     const content = await fetchData(arrByte);
                                     setContent(content);
                                     setCanPlaying(true);
                                     const audio = document.getElementById('audi');
                                     audio.play();
+                                    setSuccessRecord(false);
                                 } catch (error) {
                                     console.log(error);
                                 }
                             }, 1000)
                         };
                         reader2.onload = e => {
+                            setSuccessRecord(true);
                             const audio = document.getElementById('audi');
                             audio.src = e.target.result;
+
                         }
                         reader.readAsArrayBuffer(file);
                         reader2.readAsDataURL(file);
@@ -130,6 +137,7 @@ const SpeechToText = (props) => {
         </div>
         <audio id="audi" hidden={!canPlaying}
             controls="controls" ></audio>
+        <span hidden={!successRecord}>Pending... {successRecord}<Spin indicator={antIcon} spinning={!canPlaying}/></span>
         </div >
     );
 }
